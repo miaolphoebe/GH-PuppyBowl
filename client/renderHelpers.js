@@ -59,12 +59,12 @@ export const renderAllPlayers = (playerList) => {
   });
 };
 
-export const renderSinglePlayer = (playerObj) => {
+export const renderSinglePlayer = async (playerObj) => {
   if (!playerObj || !playerObj.id) {
     playerContainer.innerHTML = "<h3>Couldn't find data for this player!</h3>";
     return;
   }
-
+  const playerList = await fetchAllPlayers();
   let pupHTML = `
     <div class="single-player-view">
       <div class="header-info">
@@ -81,10 +81,24 @@ export const renderSinglePlayer = (playerObj) => {
       <img src="${playerObj.imageUrl}" alt="photo of ${
     playerObj.name
   } the puppy">
+  <h3>Teammates:</h3>
+      ${renderTeammates()}
       <button id="see-all">Back to all players</button>
     </div>
   `;
 
+  function renderTeammates() {
+    return playerList
+      .filter((pup) => {
+        return pup.teamId === playerObj.teamId && pup.name !== playerObj.name;
+      })
+      .map((pup) => {
+        return `<p class="pup-name">${pup.name}</p>`;
+      })
+      .join(' ');
+  }
+
+  console.log('puphtml', pupHTML);
   playerContainer.innerHTML = pupHTML;
 
   let goBackButton = document.getElementById('see-all');
