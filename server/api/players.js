@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const {Player, Team} = require('../db');
+const { Player, Team } = require('../db');
 
 // GET /api/players
 router.get('/', async (req, res, next) => {
@@ -15,9 +15,9 @@ router.get('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   try {
     const player = await Player.findByPk(req.params.id, {
-      include: Team
+      include: Team,
     });
-    if(!player) {
+    if (!player) {
       let err = new Error('No player found with that ID');
       err.status = 404;
       next(err);
@@ -39,12 +39,24 @@ router.post('/', async (req, res, next) => {
   }
 });
 
+router.put('/:id', async (req, res, next) => {
+  try {
+    const player = await Player.findByPk(req.params.id);
+    let updatePlayer = await player.update(req.body);
+    res.send(updatePlayer);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // DELETE /api/players/:id
 router.delete('/:id', async (req, res, next) => {
   try {
     const playerToRemove = await Player.findByPk(req.params.id);
-    if(!playerToRemove) {
-      let err = new Error('Cannot remove player - No player found with that ID');
+    if (!playerToRemove) {
+      let err = new Error(
+        'Cannot remove player - No player found with that ID'
+      );
       err.status = 404;
       next(err);
     } else {
@@ -54,6 +66,6 @@ router.delete('/:id', async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-})
+});
 
 module.exports = router;
